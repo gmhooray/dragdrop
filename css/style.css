@@ -1,0 +1,59 @@
+body {
+    margin: 0px;
+}
+
+.box1 {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 50px;
+    top: 50px;
+    background-color: #ccc;
+    border: 1px solid #000;
+    text-align: center;
+    cursor: move;
+    z-index: 100;
+}
+
+.box2 {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 150px;
+    top: 250px;
+    background-color: #ccc;
+    border: 1px solid #000;
+    text-align: center;
+    cursor: move;
+    z-index: 100;
+}
+
+.box3 {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 250px;
+    top: 450px;
+    background-color: #ccc;
+    border: 1px solid #000;
+    text-align: center;
+    cursor: move;
+    z-index: 100;
+}
+
+.dropzone {
+    position: relative;
+    font-size: 30px;
+
+    width: 200px;
+    height: 200px;
+    left: 800px;
+    top: 200px;
+    background-color: #fef;
+    text-align: center;
+    border: 10px solid;
+    border-style: dashed;
+    border-color: rgba(88, 88, 88, 0.3);
+    box-shadow: 5px 5px 5px #888888;
+    z-index: 1;
+}
