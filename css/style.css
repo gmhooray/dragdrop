@@ -15,25 +15,25 @@ body {
     z-index: 100;
 }
 
-#box1{
+.box1{
     left: 50px;
     top: 50px;
     background-color: #3f9;
 }
 
-#box2{
+.box2{
     left: 150px;
     top: 150px;
     background-color: #fe3;
 }
 
-#box3{
+.box3{
     left: 50px;
     top: 250px;
     background-color: #3cf;
 }
 
-.dropZone {
+.droppable {
     position: absolute;
     font-size: 30px;
     width: 200px;
@@ -47,9 +47,4 @@ body {
     box-shadow: 5px 5px 5px #888888;
     text-align: center;
     z-index: 1;
-}
-
-#dropArea2 {
-    left: 400px;
-    top: 400px;
 }

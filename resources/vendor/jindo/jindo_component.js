@@ -8685,7 +8685,7 @@ jindo.DragArea = jindo.$Class({
 	**/
 	$init : function(el, htOption) {
 		this.option({
-			sClassName : 'draggable',
+			_sDropClassName : 'draggable',
 			bFlowOut : true,
 			bSetCapture : true, //ie에서 bSetCapture 사용여부
 			nThreshold : 0
@@ -8704,9 +8704,9 @@ jindo.DragArea = jindo.$Class({
 			"bForceDrag" : false
 		};
 
-		this._wfOnMouseDown = jindo.$Fn(this._dragStart, this);
-		this._wfOnMouseMove = jindo.$Fn(this._dragging, this);
-		this._wfOnMouseUp = jindo.$Fn(this._dragEnd, this);
+		this._wfOnMouseDown = jindo.$Fn(this._onDragStart, this);
+		this._wfOnMouseMove = jindo.$Fn(this._onDrag, this);
+		this._wfOnMouseUp = jindo.$Fn(this._onDragEnd, this);
 		
 		this._wfOnDragStart = jindo.$Fn(this._onDragStart, this);
 		this._wfOnSelectStart = jindo.$Fn(this._onSelectStart, this);
@@ -8876,7 +8876,7 @@ jindo.DragArea = jindo.$Class({
 		return false;
 	},
 	
-	_dragStart : function(we) {
+	_onDragStart : function(we) {
 		
 		
 		var mouse = we.mouse(true);
@@ -8932,7 +8932,7 @@ jindo.DragArea = jindo.$Class({
 		}
 	},
 	
-	_dragging : function(we) {
+	_onDrag : function(we) {
 		var htDragInfo = this._htDragInfo,
 			htParam, htRect,
 			oPos = we.pos(), 
@@ -9139,7 +9139,7 @@ jindo.DragArea = jindo.$Class({
 		}
 	},
 	
-	_dragEnd : function(we) {
+	_onDragEnd : function(we) {
 		this._stopDragging(false);
 		
 		var htDragInfo = this._htDragInfo;
@@ -9272,7 +9272,7 @@ jindo.DropArea = jindo.$Class({
 		this._wel = jindo.$Element(this._el);
 		
 		this.option({ 
-			sClassName : 'droppable', 
+			_sDropClassName : 'droppable',
 			oDragInstance : null 
 		});
 		this.option(htOption || {});
@@ -9282,7 +9282,7 @@ jindo.DropArea = jindo.$Class({
 		this._elHandle = null;
 		this._elDragging = null;
 				
-		this._wfMouseMove = jindo.$Fn(this._dragging, this);
+		this._wfMouseMove = jindo.$Fn(this._onDrag, this);
 		this._wfMouseOver = jindo.$Fn(this._onMouseOver, this);
 		this._wfMouseOut = jindo.$Fn(this._onMouseOut, this);
 		var oDrag = this.option('oDragInstance');
@@ -9488,13 +9488,13 @@ jindo.DropArea = jindo.$Class({
 		return elDroppable;
 	},
 	
-	_isDragging : function() {
+	_bIsDragging : function() {
 		var oDrag = this.option('oDragInstance');
 		return (oDrag && oDrag.isDragging());
 	},
 	
-	_dragging : function(we) {
-		if (this._isDragging()) {
+	_onDrag : function(we) {
+		if (this._bIsDragging()) {
 			
 			var oPos = we.pos();
 
@@ -9551,7 +9551,7 @@ jindo.DropArea = jindo.$Class({
 	},
 	
 	_onMouseOver : function(we) {
-		if (this._isDragging()) {
+		if (this._bIsDragging()) {
 			var elDroppable = this._findDroppableElement(we.element);
 			if (elDroppable) {
 				this._addOveredDroppableElement(elDroppable);
@@ -9560,7 +9560,7 @@ jindo.DropArea = jindo.$Class({
 	},
 	
 	_onMouseOut : function(we) {
-		if (this._isDragging()) {
+		if (this._bIsDragging()) {
 			var elDroppable = this._findDroppableElement(we.element);
 			if (elDroppable && we.relatedElement && !jindo.$Element(we.relatedElement).isChildOf(we.element)) {
 				this._removeOveredDroppableElement(elDroppable);
@@ -11849,7 +11849,7 @@ jindo.Foggy = jindo.$Class({
 	**/
 	$init : function(htOption) {
 		this.option({
-			sClassName : "fog",
+			_sDropClassName : "fog",
 			nShowDuration : 200,
 			nShowOpacity : 0.5,
 			nHideDuration : 200,
@@ -16732,7 +16732,7 @@ jindo.MouseGesture = jindo.$Class({
 			oDoc.oncontextmenu = function(){return false;};
 		}, true);
 
-		this._htEventHandler["mouse_down"] = jindo.$Fn(this._dragStart, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchstart" : "mousedown", true);
+		this._htEventHandler["mouse_down"] = jindo.$Fn(this._onDragStart, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchstart" : "mousedown", true);
 
 		// 캔버스 생성
 		this._createCanvas();
@@ -16865,14 +16865,14 @@ jindo.MouseGesture = jindo.$Class({
 	 *
 		@param {WrappingEvent} weMouseDown 마우스 다운 이벤트 객체
 	**/
-	_dragStart : function(weMouseDown){
+	_onDragStart : function(weMouseDown){
 		if(weMouseDown.mouse().right || this._bMobileSafari){
 			weMouseDown.stop();
 			// 이벤트가 발생한 좌표 정보를 저장
 			this._addPointList(weMouseDown);
 			// 이벤트 핸들러 등록
-			this._htEventHandler["mouse_move"] = jindo.$Fn(this._dragging, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchmove" : "mousemove");
-			this._htEventHandler["mouse_up"] = jindo.$Fn(this._dragEnd, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchend" : "mouseup");
+			this._htEventHandler["mouse_move"] = jindo.$Fn(this._onDrag, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchmove" : "mousemove");
+			this._htEventHandler["mouse_up"] = jindo.$Fn(this._onDragEnd, this).attach(this.option("elTargetWindow").document, this._bMobileSafari ? "touchend" : "mouseup");
 			// setCapture() 수행 (IE에서 로딩된 플래시 객체 위에서 이벤트 처리를 하기 위한 목적)
 			if(this._sDrawingType == "vml"){
 				this.option("elTargetWindow").document.body.setCapture();
@@ -16887,7 +16887,7 @@ jindo.MouseGesture = jindo.$Class({
 	 *
 		@param {WrappingEvent} weMouseMove 마우스 무브 이벤트 겍체
 	**/
-	_dragging : function(weMouseMove){
+	_onDrag : function(weMouseMove){
 		// 이벤트가 발생한 좌표 정보를 저장
 		var htPosition = this._addPointList(weMouseMove);
 
@@ -16986,7 +16986,7 @@ jindo.MouseGesture = jindo.$Class({
 	 *
 		@param {WrappingEvent} weMouseUp 마우스 업 이벤트 객체
 	**/
-	_dragEnd : function(weEvent){
+	_onDragEnd : function(weEvent){
 		if(weEvent.mouse().right || this._bMobileSafari){
 			weEvent.stop();
 
@@ -19034,7 +19034,7 @@ jindo.RolloverArea = jindo.$Class({
 	**/
 	$init : function(el, htOption) {
 		this.option({ 
-			sClassName : "rollover", 
+			_sDropClassName : "rollover",
 			sClassPrefix : "rollover-",
 			bCheckMouseDown : true,
 			bActivateOnload : true,
@@ -19050,8 +19050,8 @@ jindo.RolloverArea = jindo.$Class({
 		this._aDownedElements = [];
 		this._wfMouseOver = jindo.$Fn(this._onMouseOver, this);
 		this._wfMouseOut = jindo.$Fn(this._onMouseOut, this);
-		this._wfMouseDown = jindo.$Fn(this._dragStart, this);
-		this._wfMouseUp = jindo.$Fn(this._dragEnd, this);
+		this._wfMouseDown = jindo.$Fn(this._onDragStart, this);
+		this._wfMouseUp = jindo.$Fn(this._onDragEnd, this);
 		
 		if (this.option("bActivateOnload")) {
 			this.activate();
@@ -19184,7 +19184,7 @@ jindo.RolloverArea = jindo.$Class({
 		}
 	},
 	
-	_dragStart : function(we) {
+	_onDragStart : function(we) {
 		var el = we.element,
 			htParam;
 			
@@ -19216,7 +19216,7 @@ jindo.RolloverArea = jindo.$Class({
 		}
 	},
 	
-	_dragEnd : function(we) {
+	_onDragEnd : function(we) {
 		var el = we.element,
 			aTargetElementDatas = [],		
 			aDownedElements = this._aDownedElements,
@@ -19301,7 +19301,7 @@ jindo.RolloverClick = jindo.$Class({
 			sCheckEvent : "click",
 			bCheckDblClick : false, // (Boolean) 더블클릭이벤트를 체크할 지 여부
 			RolloverArea : { //RolloverArea에 적용될 옵션 객체
-				sClassName : "rollover", // (String) 컴포넌트가 적용될 엘리먼트의 class 명. 상위 기준 엘리먼트의 자식 중 해당 클래스명을 가진 모든 엘리먼트에 Rollover 컴포넌트가 적용된다.
+				_sDropClassName : "rollover", // (String) 컴포넌트가 적용될 엘리먼트의 class 명. 상위 기준 엘리먼트의 자식 중 해당 클래스명을 가진 모든 엘리먼트에 Rollover 컴포넌트가 적용된다.
 				sClassPrefix : "rollover-", // (String) 컴포넌트가 적용될 엘리먼트에 붙게될 class명의 prefix. (prefix+"over|down")
 				bCheckMouseDown : false,
 				bActivateOnload : false,
@@ -19564,7 +19564,7 @@ jindo.Slider = jindo.$Class({
 		
 		// 컴포넌트 내부에서 사용하는 다른 컴포넌트 초기화
 		this._oDragArea = new jindo.DragArea(this._elTrack, { 
-			sClassName : this._sRand, 
+			_sDropClassName : this._sRand,
 			bFlowOut : false 
 		}).attach({
 			beforeDrag : function(oCustomEvent) {
@@ -19958,7 +19958,7 @@ jindo.ScrollBar = new jindo.$Class({
 		this._wfOnMouseLeave = jindo.$Fn(this._onMouseLeave, this);
 		
 		this._wfOnWheel = jindo.$Fn(this._onWheel, this);
-		this._wfOnMouseUp = jindo.$Fn(this._dragEnd, this);
+		this._wfOnMouseUp = jindo.$Fn(this._onDragEnd, this);
 
 		this._assignHTMLElements();
 		this._initialize4Tablet();
@@ -20445,7 +20445,7 @@ jindo.ScrollBar = new jindo.$Class({
 			sClassNameForRollover = this.option("sClassNameForRollover");
 			
 		this._oRolloverArea = new jindo.RolloverArea(this._el, {
-			sClassName : sClassNameForRollover, // (String) 컴포넌트가 적용될 엘리먼트의 class 명. 상위 기준 엘리먼트의 자식 중 해당 클래스명을 가진 모든 엘리먼트에 Rollover 컴포넌트가 적용된다.
+			_sDropClassName : sClassNameForRollover, // (String) 컴포넌트가 적용될 엘리먼트의 class 명. 상위 기준 엘리먼트의 자식 중 해당 클래스명을 가진 모든 엘리먼트에 Rollover 컴포넌트가 적용된다.
 			sClassPrefix : sClassPrefix // (String) 컴포넌트가 적용될 엘리먼트에 붙게될 class명의 prefix. (prefix+"over|down")
 		}).attach({
 			over: function(oCustomEvent){
@@ -20454,12 +20454,12 @@ jindo.ScrollBar = new jindo.$Class({
 			},
 			down: function(oCustomEvent){
 				oCustomEvent.stop();
-				self._dragStart(oCustomEvent.element);
+				self._onDragStart(oCustomEvent.element);
 				self._onRollover("down", oCustomEvent.element);
 			},
 			up: function(oCustomEvent){
 				oCustomEvent.stop();
-				self._dragEnd(oCustomEvent.element);
+				self._onDragEnd(oCustomEvent.element);
 				self._onRollover("up", oCustomEvent.element);
 			},
 			out: function(oCustomEvent){
@@ -20692,7 +20692,7 @@ jindo.ScrollBar = new jindo.$Class({
 		this.setScrollLeft(this.getScrollLeft()+n);
 	},
 	
-	_dragStart : function(el) {
+	_onDragStart : function(el) {
 		var wel = jindo.$Element(el),
 			self = this,
 			setScrollBy,
@@ -20730,7 +20730,7 @@ jindo.ScrollBar = new jindo.$Class({
 		
 	},
 	
-	_dragEnd : function(el) {
+	_onDragEnd : function(el) {
 		this._oTimer.abort();
 	},
 	
@@ -21553,7 +21553,7 @@ jindo.SelectArea = jindo.$Class({
 		this._wel = jindo.$Element(this._el); 
 		var htDefaultOption = {
 			bActivateOnload : true, //(Boolean) 초기화시 활성여부
-			sClassName : "selectable", //(String) 셀렉트 가능한 엘리먼트에 지정된 클래스명
+			_sDropClassName : "selectable", //(String) 셀렉트 가능한 엘리먼트에 지정된 클래스명
 			htStatus : {
 				sSelected : "selected" //(String) 셀렉트된 엘리먼트에 추가되는 클래스명
 			},
@@ -21573,9 +21573,9 @@ jindo.SelectArea = jindo.$Class({
 		this._welRectIndicator = null;
 		this._wfDragStart = jindo.$Fn(this._onDragSelectStart, this);
 		this._wfSelectStart = jindo.$Fn(this._onDragSelectStart, this);
-		this._wfMouseDown = jindo.$Fn(this._dragStart, this);
-		this._wfMouseMove = jindo.$Fn(this._dragging, this);
-		this._wfMouseUp = jindo.$Fn(this._dragEnd, this);
+		this._wfMouseDown = jindo.$Fn(this._onDragStart, this);
+		this._wfMouseMove = jindo.$Fn(this._onDrag, this);
+		this._wfMouseUp = jindo.$Fn(this._onDragEnd, this);
 		this._wfMouseUpWithinSelected = jindo.$Fn(this._onMouseUpWithinSelected, this);
 		this._wfCompute = jindo.$Fn(this._computeSizeAndPos, this);
 		
@@ -21878,7 +21878,7 @@ jindo.SelectArea = jindo.$Class({
 		return a;
 	},
 	
-	_dragStart : function(we) {
+	_onDragStart : function(we) {
 		var htKey = we.key();
 		var htMouse = we.mouse(true);
 		
@@ -22006,7 +22006,7 @@ jindo.SelectArea = jindo.$Class({
 		});
 	},
 	
-	_dragging : function(we) {
+	_onDrag : function(we) {
 		this._htDragEndPos = we.pos();
 		var welRect = this._getRectangleElement(), elRect = welRect.$value();
 		var nGapX = this._htDragEndPos.pageX - this._htDragStartPos.pageX;
@@ -22130,7 +22130,7 @@ jindo.SelectArea = jindo.$Class({
 		}
 	},
 	
-	_dragEnd : function(we) {
+	_onDragEnd : function(we) {
 		var bDeselectAll = (!this.isDragging() && !we.key()[this._sCtrl] && (!this.option("bRemainOne") && this.option("bDeselectAllOutside"))),
 			bHasCandidate = this._waToggleCandidate.length(),
 			aLastSelected = this._convertArray(this.getSelected()).concat();
@@ -22571,7 +22571,7 @@ jindo.SelectBox = jindo.$Class({
         this._oRolloverClick = new jindo.RolloverClick(this.getSelectListElement(), {
             sCheckEvent : "mouseup",
             RolloverArea : {
-                sClassName : sPrefix + "item",
+                _sDropClassName : sPrefix + "item",
                 sClassPrefix : sPrefix + "item-"  
             }
         }).attach({
@@ -23566,7 +23566,7 @@ jindo.StarRating = jindo.$Class({
 		//컴포넌트에서 사용되는 HTMLElement들을 선언하는 메서드
 		this._assignHTMLElements();
 		
-		this._wfMouseMove = jindo.$Fn(this._dragging, this);
+		this._wfMouseMove = jindo.$Fn(this._onDrag, this);
 		this._wfMouseLeave = jindo.$Fn(this._onMouseLeave, this);
 		this._wfClick = jindo.$Fn(this._onClick, this);
 		
@@ -23743,7 +23743,7 @@ jindo.StarRating = jindo.$Class({
 		this._wfClick.detach(el, "click");
 	},
 	
-	_dragging : function(we) {
+	_onDrag : function(we) {
 		var nOffsetX = we.pos(true).offsetX + 1,
 			nWidth = (nOffsetX > this._nBaseWidth) ? this._nBaseWidth : nOffsetX,
 			nValue;
@@ -25173,7 +25173,7 @@ jindo.Visible = jindo.$Class({
 		this._nTimer = null;
 		
 		this.option({
-			sClassName : "check_visible",
+			_sDropClassName : "check_visible",
 			nExpandSize : 0 // 확장 영역
 		});
 
