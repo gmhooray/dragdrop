@@ -11,10 +11,3 @@ var nts = nts || {};
  */
 
 nts.Component = nts.Component || {};
-
-/**
- *  @desc nts Drag & Drop Component Namespace
- * */
-
-nts.Component.DragModel = nts.Component.DragModel || {};
-nts.Component.DropModel = nts.Component.DropModel || {};

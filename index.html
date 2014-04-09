@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Drag & Drop Component</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="draggable box1"><span class="blind">First Box</span></div>
+<div class="draggable box2"><span class="blind">Second Box</span></div>
+<div class="draggable box3"><span class="blind">Third Box</span></div>
+
+<div class="droppable">DropArea</div>
+
+<!-- this area is for javascript  -->
+<script src="resources/vendor/jindo/jindo.desktop.all.js"></script>
+<script src="resources/vendor/jindo/jindo_component.js"></script>
+<script src="src/namespace.js"></script>
+<script src="src/module/DragArea.js"></script>
+<script src="src/module/DropArea.js"></script>
+<script>
+
+    var oDragArea = new nts.Component.DragArea('.draggable');
+
+    //oDragArea.activate();
+    //oDragArea.deactivate();
+
+    var oDropArea = new nts.Component.DropArea('.droppable', '.draggable').attach({
+        drop: function (oCustomEvent) {
+            //TODO implement custom event : oEvent
+            alert(oCustomEvent.element.innerText);
+        }
+    });
+
+    //oDropArea.activate();
+    //oDropArea.deactivate();
+
+</script>
+</body>
+</html>
